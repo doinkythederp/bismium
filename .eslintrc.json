@@ -1,0 +1,19 @@
+{
+  "extends": "marine/prettier/node",
+  "parserOptions": {
+    "project": "./tsconfig-eslint.json"
+  },
+  "rules": {
+    "@typescript-eslint/naming-convention": "off",
+    "@typescript-eslint/array-type": ["error", { "default": "array-simple" }],
+    "@typescript-eslint/no-misused-new": "error",
+    "@typescript-eslint/prefer-as-const": "error",
+    "@typescript-eslint/indent": "off",
+    "no-redeclare": "off",
+    "spaced-comment": ["error", "always", { "markers": ["/"] }],
+    "eqeqeq": "error",
+    "no-unused-expressions": "error",
+    "no-warning-comments": "warn",
+    "no-tabs": "error"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig-base.json",
+  "compilerOptions": {
+    "outDir": "../lib/test",
+    "rootDir": ".",
+    "types": ["node", "jest"]
+  },
+  "references": [{ "path": "../src" }]
+}
