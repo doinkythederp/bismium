@@ -9,6 +9,6 @@ export default {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
-  coverageReporters: ['text', 'lcov'],
+  coverageReporters: ['text-summary', 'html'],
   errorOnDeprecated: true
 };
