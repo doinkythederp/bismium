@@ -19,30 +19,32 @@ export default class StringInterpreter extends Interpreter<
         ? Constants.SINGLE_QUOTE
         : Constants.DOUBLE_QUOTE;
 
-    this.use((char) => {
+    this.use((data) => {
+      data = data[this.state.cursor]!;
+
       // check if this character is escaped
       if (this.state.nextCharacterEscaped) {
-        this.node.content += char;
+        this.node.content += data;
         this.state.nextCharacterEscaped = false;
         this.state.cursor++;
         return true;
       }
 
       // check for special characters
-      if (char === stringEnd && this.node.parent) {
+      if (data === stringEnd && this.node.parent) {
         this.state.finished = true;
         this.state.cursor++;
         return true;
       }
 
-      if (char === Constants.ESCAPE) {
+      if (data === Constants.ESCAPE) {
         this.state.nextCharacterEscaped = true;
         this.state.cursor++;
         return true;
       }
 
       // add character
-      this.node.content += char;
+      this.node.content += data;
       this.state.cursor++;
     }).end(() => {
       if (!this.state.finished)

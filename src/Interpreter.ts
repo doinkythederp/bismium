@@ -15,13 +15,9 @@ export interface BaseInterpreterState {
   finished: boolean;
 }
 
-export type InterpreterCursorHandler<thisValue> = (
+export type InterpreterCallback<thisValue> = (
   this: thisValue,
-  cursorData: string
-) => boolean | undefined | void | PromiseLike<boolean | undefined | void>;
-
-export type InterpreterFinishHandler<thisValue> = (
-  this: thisValue
+  data: string
 ) => boolean | undefined | void | PromiseLike<boolean | undefined | void>;
 
 /**
@@ -35,14 +31,14 @@ export default abstract class Interpreter<
 
   protected abstract state: State;
 
-  private readonly handlers: Array<InterpreterCursorHandler<this>> = [];
-  private readonly endHandlers: Array<InterpreterFinishHandler<this>> = [];
+  private readonly handlers: Array<InterpreterCallback<this>> = [];
+  private readonly endHandlers: Array<InterpreterCallback<this>> = [];
 
   /**
    * Adds an interpreter loop callback which is repeatadly run to process the current letter
    * @param handler The handler callback which can return `true` to skip the remaining handlers and continue to the next iteration
    */
-  protected use(handler: InterpreterCursorHandler<this>) {
+  protected use(handler: InterpreterCallback<this>) {
     this.handlers.push(handler);
     return this;
   }
@@ -51,7 +47,7 @@ export default abstract class Interpreter<
    * Adds an end handler to the interpreter, which is run when either `Interpreter#state.finished` is `true`, or there are no more letters
    * @param handler The handler callback which can return `true` to skip the remaining handlers
    */
-  protected end(handler: InterpreterFinishHandler<this>) {
+  protected end(handler: InterpreterCallback<this>) {
     this.endHandlers.push(handler);
     return this;
   }
@@ -67,8 +63,7 @@ export default abstract class Interpreter<
           return res();
 
         for (const handler of this.handlers) {
-          const shouldSkip =
-            (await handler.call(this, data[this.state.cursor]!)) ?? false;
+          const shouldSkip = (await handler.call(this, data)) ?? false;
           if (shouldSkip) break;
         }
 
@@ -79,7 +74,7 @@ export default abstract class Interpreter<
     });
 
     for (const handler of this.endHandlers) {
-      const shouldSkip = (await handler.call(this)) ?? false;
+      const shouldSkip = (await handler.call(this, data)) ?? false;
       if (shouldSkip) break;
     }
 
