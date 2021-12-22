@@ -64,3 +64,26 @@ export class TextNode extends BaseNode implements BaseTextNode {
     return this;
   }
 }
+
+export enum NumberNodeVariant {
+  DECIMAL,
+  HEXADECIMAL
+}
+
+/**
+ * A decimal or hex number node
+ */
+export class NumberNode extends BaseNode {
+  public value = 0;
+  public variant = NumberNodeVariant.DECIMAL;
+
+  public setValue(value: number) {
+    this.value = value;
+    return this;
+  }
+
+  public setVariant(variant: NumberNodeVariant) {
+    this.variant = variant;
+    return this;
+  }
+}
