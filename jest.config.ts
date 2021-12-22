@@ -5,7 +5,7 @@
 
 export default {
   displayName: 'test',
-  testMatch: ['<rootDir>/lib/test/**/*.js'],
+  testMatch: ['<rootDir>/lib/test/**/*.test.js'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
