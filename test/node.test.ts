@@ -1,4 +1,4 @@
-import { NumberNode, BaseNode } from '../src/Node';
+import { NumberNode, BaseNode, NumberNodeVariant } from '../src/Node';
 
 function testNodeJSON(NodeType: typeof BaseNode) {
   class Node extends NodeType {}
@@ -12,5 +12,15 @@ function testNodeJSON(NodeType: typeof BaseNode) {
 describe(NumberNode, () => {
   it('successfully converts to JSON', () => {
     testNodeJSON(NumberNode);
+  });
+
+  it('has working setter methods', () => {
+    const node = new NumberNode(999);
+
+    node.setValue(123);
+    expect(node.value).toBe(123);
+
+    node.setVariant(NumberNodeVariant.HEXADECIMAL);
+    expect(node.variant).toBe(NumberNodeVariant.HEXADECIMAL);
   });
 });
