@@ -47,7 +47,7 @@ export default class StringInterpreter extends Interpreter<
       this.node.content += data;
       this.state.cursor++;
     }).end(() => {
-      if (!this.state.finished)
+      if (!this.state.finished && this.node.parent)
         throw new Errors.SyntaxError(
           `Unexpected end of string (missing \`${stringEnd}\`)`,
           {
