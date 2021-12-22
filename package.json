@@ -30,7 +30,7 @@
   },
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "build": "tsc -b -v",
+    "build": "rm -rf ./lib/test/ && tsc -b -v",
     "lint": "eslint src",
     "clean": "tsc -v --clean",
     "prepare": "husky install"
