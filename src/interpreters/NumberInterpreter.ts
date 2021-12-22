@@ -61,6 +61,7 @@ export default class NumberInterpreter extends Interpreter<
         );
       }
     }).end(() => {
+      this.node.meta.sourceLength = this.state.cursor - 1;
       this.node.value =
         this.node.variant === NumberNodeVariant.DECIMAL
           ? parseFloat(this.state.value)

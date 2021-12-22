@@ -55,6 +55,7 @@ export default class StringInterpreter extends Interpreter<
             length: 1
           }
         );
+      this.node.meta.sourceLength = this.state.cursor - 1;
     });
   }
 

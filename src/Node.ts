@@ -19,9 +19,15 @@ export interface NodeMetadata {
  */
 export abstract class BaseNode implements Node {
   public constructor(
-    public meta: NodeMetadata,
+    sourceLocation: number,
     public readonly parent: Node | null = null
-  ) {}
+  ) {
+    this.meta = {
+      sourceLocation,
+      // this will be updated by an interpreter
+      sourceLength: 0
+    };
+  }
 
   public toJSON(): Record<string, unknown> {
     return {
@@ -29,6 +35,8 @@ export abstract class BaseNode implements Node {
       meta: this.meta
     };
   }
+
+  public meta: NodeMetadata;
 
   // TODO: implement
   // public static fromJSON(data: Record<string, unknown>): BaseNode {}
