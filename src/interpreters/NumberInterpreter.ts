@@ -29,9 +29,8 @@ export default class NumberInterpreter extends Interpreter<
         if (this.state.hasDecimal) {
           this.state.finished = true;
           return true;
-        } else {
-          this.state.hasDecimal = true;
         }
+        this.state.hasDecimal = true;
       }
 
       // add character
