@@ -19,15 +19,9 @@ export interface NodeMetadata {
  */
 export abstract class BaseNode implements Node {
   public constructor(
-    sourceLocation: number,
-    public readonly parent: Node | null = null
-  ) {
-    this.meta = {
-      sourceLocation,
-      // this will be updated by an interpreter
-      sourceLength: 0
-    };
-  }
+    public meta: NodeMetadata,
+    public parent: Node | null = null
+  ) {}
 
   public toJSON(): Record<string, unknown> {
     return {
@@ -36,11 +30,11 @@ export abstract class BaseNode implements Node {
     };
   }
 
-  public meta: NodeMetadata;
-
   // TODO: implement
   // public static fromJSON(data: Record<string, unknown>): BaseNode {}
 }
+
+export type ValueNodes = NumberNode | TextNode;
 
 /**
  * Represents a basic text node with a content
@@ -59,17 +53,13 @@ export enum TextNodeVariant {
  * A single or double quoted text node
  */
 export class TextNode extends BaseNode implements BaseTextNode {
-  public content = '';
-  public variant = TextNodeVariant.SINGLE_QUOTE;
-
-  public setContent(content: string) {
-    this.content = content;
-    return this;
-  }
-
-  public setVariant(variant: TextNodeVariant) {
-    this.variant = variant;
-    return this;
+  public constructor(
+    public content: string,
+    public variant: TextNodeVariant,
+    meta: NodeMetadata,
+    parent: Node | null = null
+  ) {
+    super(meta, parent);
   }
 }
 
@@ -82,16 +72,62 @@ export enum NumberNodeVariant {
  * A decimal or hex number node
  */
 export class NumberNode extends BaseNode {
-  public value = 0;
-  public variant = NumberNodeVariant.DECIMAL;
-
-  public setValue(value: number) {
-    this.value = value;
-    return this;
+  public constructor(
+    public value: number,
+    public variant: NumberNodeVariant,
+    meta: NodeMetadata,
+    parent: Node | null = null
+  ) {
+    super(meta, parent);
   }
+}
 
-  public setVariant(variant: NumberNodeVariant) {
-    this.variant = variant;
-    return this;
+/**
+ * A variable access/function call node
+ */
+export class ValueNode extends BaseNode {
+  public constructor(
+    public target: ValueNodes | VariableAccessorNode,
+    public props: Array<PropertyAccessorNode | FunctionCallNode>,
+    meta: NodeMetadata,
+    parent: Node | null = null
+  ) {
+    super(meta, parent);
+  }
+}
+
+/**
+ * A node representing a read of a variable
+ */
+export class VariableAccessorNode extends BaseNode {
+  public constructor(
+    public name: string,
+    meta: NodeMetadata,
+    parent: Node | null = null
+  ) {
+    super(meta, parent);
+  }
+}
+
+/**
+ * A node representing a read of a property
+ */
+export class PropertyAccessorNode extends BaseNode {
+  public constructor(
+    public prop: string,
+    meta: NodeMetadata,
+    parent: Node | null = null
+  ) {
+    super(meta, parent);
+  }
+}
+
+export class FunctionCallNode extends BaseNode {
+  public constructor(
+    public args: ValueNode[],
+    meta: NodeMetadata,
+    parent: Node | null = null
+  ) {
+    super(meta, parent);
   }
 }

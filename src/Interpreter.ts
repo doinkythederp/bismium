@@ -27,9 +27,13 @@ export default abstract class Interpreter<
   NodeType extends Node = Node,
   State extends BaseInterpreterState = BaseInterpreterState
 > {
-  public constructor(public readonly node: NodeType) {}
+  public constructor(
+    protected readonly sourceLocation = 0,
+    protected readonly parent: Node | null = null
+  ) {}
 
   protected abstract state: State;
+  protected node: NodeType | null = null;
 
   private readonly handlers: Array<InterpreterCallback<this>> = [];
   private readonly endHandlers: Array<InterpreterCallback<this>> = [];
@@ -78,6 +82,6 @@ export default abstract class Interpreter<
       if (shouldSkip) break;
     }
 
-    return this.node;
+    return this.node!;
   }
 }

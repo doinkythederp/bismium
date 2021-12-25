@@ -1,46 +1,42 @@
 import Interpreter, { BaseInterpreterState } from '../Interpreter';
-import { NumberNode, NumberNodeVariant } from '../Node';
+import { Node, NumberNode, NumberNodeVariant } from '../Node';
 import * as Constants from '../util/constants';
-import * as Errors from '../util/errors';
 
 export interface NumberInterpreterState extends BaseInterpreterState {
   value: string;
   hasDecimal: boolean;
+  variant: NumberNodeVariant;
 }
 
 export default class NumberInterpreter extends Interpreter<
   NumberNode,
   NumberInterpreterState
 > {
-  public constructor(node: NumberNode) {
-    super(node);
+  public constructor(sourceLocation = 0, parent: Node | null = null) {
+    super(sourceLocation, parent);
 
     this.use((data) => {
       // check if this is a hex-style number
       if (this.state.cursor === 0 && data.startsWith(Constants.HEX_ESCAPE)) {
         this.state.cursor = 2;
-        this.node.variant = NumberNodeVariant.HEXADECIMAL;
+        this.state.variant = NumberNodeVariant.HEXADECIMAL;
         return true;
       }
 
       const char = data[this.state.cursor]!;
 
-      if (
-        char === Constants.TAG_END ||
-        char === Constants.SEPERATOR ||
-        // if we have a period where it shouldn't be, it's probably
-        // a property accessor
-        (char === Constants.DECIMAL &&
-          (this.state.hasDecimal ||
-            this.node.variant === NumberNodeVariant.HEXADECIMAL))
-      ) {
-        this.state.finished = true;
-        return true;
+      if (char === Constants.DECIMAL) {
+        if (this.state.hasDecimal) {
+          this.state.finished = true;
+          return true;
+        } else {
+          this.state.hasDecimal = true;
+        }
       }
 
       // add character
       if (
-        (this.node.variant === NumberNodeVariant.DECIMAL
+        (this.state.variant === NumberNodeVariant.DECIMAL
           ? NumberInterpreter.validNumber
           : NumberInterpreter.validHex
         ).test(char)
@@ -48,24 +44,20 @@ export default class NumberInterpreter extends Interpreter<
         this.state.value += char;
         this.state.cursor++;
       } else {
-        throw new Errors.SyntaxError(
-          `Invalid digit in ${
-            this.node.variant === NumberNodeVariant.DECIMAL
-              ? 'number. (Only 0-9'
-              : 'hexadecimal number. (Only 0-9 and A-F'
-          } allowed, got \`${char}\` instead)`,
-          {
-            at: node.meta.sourceLocation + this.state.cursor,
-            length: -this.state.cursor
-          }
-        );
+        this.state.finished = true;
       }
     }).end(() => {
-      this.node.meta.sourceLength = this.state.cursor - 1;
-      this.node.value =
-        this.node.variant === NumberNodeVariant.DECIMAL
+      this.node = new NumberNode(
+        this.state.variant === NumberNodeVariant.DECIMAL
           ? parseFloat(this.state.value)
-          : parseInt(this.state.value, 16);
+          : parseInt(this.state.value, 16),
+        this.state.variant,
+        {
+          sourceLocation,
+          sourceLength: this.state.cursor
+        },
+        parent
+      );
     });
   }
 
@@ -73,7 +65,8 @@ export default class NumberInterpreter extends Interpreter<
     cursor: 0,
     finished: false,
     value: '',
-    hasDecimal: false
+    hasDecimal: false,
+    variant: NumberNodeVariant.DECIMAL
   };
 
   public static validNumber = /^[0-9\.]$/;
