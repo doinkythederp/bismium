@@ -1,6 +1,5 @@
 import NumberInterpreter from '../src/interpreters/NumberInterpreter';
 import { NumberNode } from '../src/Node';
-import * as Errors from '../src/util/errors';
 
 describe(NumberInterpreter, () => {
   async function checkInterpretedValues(tests: {
@@ -10,7 +9,7 @@ describe(NumberInterpreter, () => {
     const results: Array<Promise<NumberNode>> = [];
 
     for (const value of tests.values) {
-      results.push(new NumberInterpreter(new NumberNode(0)).run(value));
+      results.push(new NumberInterpreter(0).run(value));
     }
 
     for (const [value, target] of (await Promise.all(results)).map(
@@ -41,11 +40,10 @@ describe(NumberInterpreter, () => {
     });
   });
 
-  it('rejects bad characters', () => {
-    for (const value of ['0xyz', '123f56', '1xabc', '123xyz']) {
-      expect(async () => {
-        await new NumberInterpreter(new NumberNode(0)).run(value);
-      }).rejects.toBeInstanceOf(Errors.SyntaxError);
-    }
+  it('ends on unexpected character', async () => {
+    await checkInterpretedValues({
+      values: ['0x123)', '999)', '123 '],
+      targets: [0x123, 999, 123]
+    });
   });
 });
