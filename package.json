@@ -6,7 +6,7 @@
   "main": "./dist/index.js",
   "exports": "./dist/index.js",
   "author": "doinkythederp",
-  "type": "module",
+  "type": "commonjs",
   "license": "ISC",
   "dependencies": {
     "tslib": "^2.3.1"
