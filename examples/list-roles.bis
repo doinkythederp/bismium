@@ -1,0 +1,5 @@
+{
+  member.roles.forEach(fn (role, i) {
+    return `{i}. {role.mention()}`;
+  })
+}

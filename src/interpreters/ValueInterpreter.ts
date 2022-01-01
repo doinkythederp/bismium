@@ -1,5 +1,6 @@
 import Interpreter, { BaseInterpreterState } from '../Interpreter';
 import {
+  FunctionCallNode,
   Node,
   PropertyAccessorNode,
   TextNodeVariant,
@@ -9,6 +10,7 @@ import {
 } from '../Node';
 import * as Constants from '../util/constants';
 import * as Errors from '../util/errors';
+import FunctionCallInterpreter from './FunctionCallInterpreter';
 import NumberInterpreter from './NumberInterpreter';
 import PropertyAccessorInterpreter from './PropertyAccessorInterpreter';
 import StringInterpreter from './StringInterpreter';
@@ -16,7 +18,7 @@ import VariableAccessorInterpreter from './VariableAccessorInterpreter';
 
 export interface ValueInterpreterState extends BaseInterpreterState {
   targetNode: ValueNodes | VariableAccessorNode | null;
-  props: PropertyAccessorNode[];
+  props: Array<PropertyAccessorNode | FunctionCallNode>;
 }
 
 export default class ValueInterpreter extends Interpreter<
@@ -27,16 +29,16 @@ export default class ValueInterpreter extends Interpreter<
     super(sourceLocation, parent);
 
     this.use(async (data) => {
-      if (this.state.cursor !== 0) return;
+      if (this.state.targetNode) return;
       const char = data[this.state.cursor]!;
 
       if (Constants.whitespace.has(char)) {
         this.state.cursor++;
         return true;
       } else if (NumberInterpreter.validNumber.test(char)) {
-        this.state.targetNode = await new NumberInterpreter(sourceLocation).run(
-          data
-        );
+        this.state.targetNode = await new NumberInterpreter(
+          sourceLocation + this.state.cursor
+        ).run(data.slice(this.state.cursor));
       } else if (
         char === Constants.SINGLE_QUOTE ||
         char === Constants.DOUBLE_QUOTE
@@ -45,39 +47,44 @@ export default class ValueInterpreter extends Interpreter<
           char === Constants.SINGLE_QUOTE
             ? TextNodeVariant.SINGLE_QUOTE
             : TextNodeVariant.DOUBLE_QUOTE,
-          sourceLocation
-        ).run(data.slice(1));
+          sourceLocation + this.state.cursor
+        ).run(data.slice(this.state.cursor + 1));
       } else if (VariableAccessorInterpreter.validKeyword.test(char)) {
         this.state.targetNode = await new VariableAccessorInterpreter(
-          sourceLocation
-        ).run(data);
+          sourceLocation + this.state.cursor
+        ).run(data.slice(this.state.cursor));
       } else {
         throw new Errors.SyntaxError(
           `expected a value (e.g. string literal or variable), instead got unexpected token \`${char}\``,
           {
-            at: this.state.cursor,
+            at: this.state.cursor + sourceLocation,
             length: 0
           }
         );
       }
 
-      this.state.cursor =
-        sourceLocation + this.state.targetNode.meta.sourceLength;
+      this.state.cursor += this.state.targetNode.meta.sourceLength;
     })
       .use(async (data) => {
         const char = data[this.state.cursor]!;
-        if (char === Constants.PROPERTY_ACCESSOR) {
-          this.state.cursor++;
+        this.state.cursor++;
 
+        if (char === Constants.PROPERTY_ACCESSOR) {
           const result = await new PropertyAccessorInterpreter(
             sourceLocation + this.state.cursor
           ).run(data.slice(this.state.cursor));
           this.state.cursor += result.meta.sourceLength;
           this.state.props.push(result);
+        } else if (char === Constants.FUNCTION_CALL_BEGIN) {
+          const result = await new FunctionCallInterpreter(
+            sourceLocation + this.state.cursor
+          ).run(data.slice(this.state.cursor));
+          this.state.cursor += result.meta.sourceLength;
+          this.state.props.push(result);
         } else if (Constants.whitespace.has(char)) {
-          this.state.cursor++;
           return true;
         } else {
+          this.state.cursor--;
           this.state.finished = true;
         }
       })
