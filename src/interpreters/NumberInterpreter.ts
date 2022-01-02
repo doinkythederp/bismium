@@ -3,8 +3,8 @@ import { Node, NumberNode, NumberNodeVariant } from '../Node';
 import * as Constants from '../util/constants';
 
 export interface NumberInterpreterState extends BaseInterpreterState {
-  value: string;
-  hasDecimal: boolean;
+  value: number;
+  charsSinceDecimal: number | null;
   variant: NumberNodeVariant;
 }
 
@@ -26,11 +26,16 @@ export default class NumberInterpreter extends Interpreter<
       const char = data[this.state.cursor]!;
 
       if (char === Constants.DECIMAL) {
-        if (this.state.hasDecimal) {
+        if (
+          this.state.charsSinceDecimal !== null ||
+          this.state.variant === NumberNodeVariant.HEXADECIMAL
+        ) {
           this.state.finished = true;
-          return true;
+        } else {
+          this.state.charsSinceDecimal = 0;
+          this.state.cursor++;
         }
-        this.state.hasDecimal = true;
+        return true;
       }
 
       // add character
@@ -40,16 +45,32 @@ export default class NumberInterpreter extends Interpreter<
           : NumberInterpreter.validHex
         ).test(char)
       ) {
-        this.state.value += char;
+        if (this.state.charsSinceDecimal !== null)
+          this.state.charsSinceDecimal++;
+
+        const charCode = char.toLowerCase().charCodeAt(0);
+        const digit =
+          charCode -
+          (charCode >= NumberInterpreter.firstHexCode
+            ? NumberInterpreter.firstHexCode - NumberInterpreter.hexOffset
+            : NumberInterpreter.firstDecimalCode);
+
+        if (this.state.charsSinceDecimal === null) {
+          this.state.value =
+            this.state.value *
+              (this.state.variant === NumberNodeVariant.DECIMAL ? 10 : 16) +
+            digit;
+        } else {
+          this.state.value += digit / 10 ** this.state.charsSinceDecimal;
+        }
+
         this.state.cursor++;
       } else {
         this.state.finished = true;
       }
     }).end(() => {
       this.node = new NumberNode(
-        this.state.variant === NumberNodeVariant.DECIMAL
-          ? parseFloat(this.state.value)
-          : parseInt(this.state.value, 16),
+        this.state.value,
         this.state.variant,
         {
           sourceLocation,
@@ -63,11 +84,15 @@ export default class NumberInterpreter extends Interpreter<
   protected state: NumberInterpreterState = {
     cursor: 0,
     finished: false,
-    value: '',
-    hasDecimal: false,
+    value: 0,
+    charsSinceDecimal: null,
     variant: NumberNodeVariant.DECIMAL
   };
 
   public static validNumber = /^[0-9\.]$/;
   public static validHex = /^[0-9A-F]$/i;
+
+  public static readonly firstHexCode = 'a'.charCodeAt(0);
+  public static readonly firstDecimalCode = '0'.charCodeAt(0);
+  public static readonly hexOffset = 10;
 }
