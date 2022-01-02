@@ -1,8 +1,8 @@
 {
-  "name": "bismium",
+  "name": "@doinkythederp/bismium-interpreter",
   "private": true,
   "version": "0.1.0",
-  "description": "An easy to learn programming language designed for templating",
+  "description": "An interpreter for the Bismium programming language",
   "main": "./dist/index.js",
   "exports": "./dist/index.js",
   "author": "doinkythederp",
