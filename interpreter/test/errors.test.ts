@@ -1,16 +1,16 @@
-import * as Errors from '../src/util/errors';
+import * as Bismium from '../src';
 
-function checkBismiumError(ErrorType: new () => Errors.BismuiumError) {
+function checkBismiumError(ErrorType: new () => Bismium.BismuiumError) {
   it("always has its constructor's name", () => {
     expect(new ErrorType().name).toBe(ErrorType.name);
   });
 }
 
-describe(Errors.BismuiumError, () => {
-  checkBismiumError(Errors.BismuiumError);
+describe(Bismium.BismuiumError, () => {
+  checkBismiumError(Bismium.BismuiumError);
 });
 
-function checkSourceError(ErrorType: typeof Errors.SourceError) {
+function checkSourceError(ErrorType: typeof Bismium.SourceError) {
   checkBismiumError(ErrorType);
 
   it('accepts a `meta` argument', () => {
@@ -30,10 +30,10 @@ function checkSourceError(ErrorType: typeof Errors.SourceError) {
   });
 }
 
-describe(Errors.SourceError, () => {
-  checkSourceError(Errors.SourceError);
+describe(Bismium.SourceError, () => {
+  checkSourceError(Bismium.SourceError);
 });
 
-describe(Errors.SyntaxError, () => {
-  checkSourceError(Errors.SyntaxError);
+describe(Bismium.SyntaxError, () => {
+  checkSourceError(Bismium.SyntaxError);
 });

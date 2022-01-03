@@ -1,5 +1,4 @@
-import NumberInterpreter from '../src/interpreters/NumberInterpreter';
-import { NumberNode } from '../src/Node';
+import { NumberNode, NumberInterpreter } from '../src';
 import createValueChecker from './createValueChecker';
 
 describe(NumberInterpreter, () => {
