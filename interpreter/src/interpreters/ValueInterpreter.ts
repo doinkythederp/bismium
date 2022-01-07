@@ -116,6 +116,11 @@ export default class ValueInterpreter extends Interpreter<
             null
           );
 
+          node.target.parent = node;
+          for (const prop of node.props) {
+            prop.parent = node;
+          }
+
           this.state.targetNode = null;
           this.state.props = [];
 
