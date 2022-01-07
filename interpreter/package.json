@@ -35,5 +35,6 @@
   },
   "files": [
     "lib/src/"
-  ]
+  ],
+  "repository": "https://github.com/doinkythederp/bismium"
 }
