@@ -83,12 +83,13 @@ export class NumberNode extends BaseNode {
 }
 
 /**
- * A variable access/function call node
+ * A variable access/function call/value setter node
  */
 export class ValueNode extends BaseNode {
   public constructor(
     public target: ValueNodes | VariableAccessorNode,
     public props: Array<PropertyAccessorNode | FunctionCallNode>,
+    public setTo: ValueNode | null,
     meta: NodeMetadata,
     parent: Node | null = null
   ) {

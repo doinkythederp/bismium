@@ -13,5 +13,6 @@ export const PROPERTY_ACCESSOR = '.';
 export const FUNCTION_CALL_BEGIN = '(';
 export const FUNCTION_CALL_END = ')';
 export const ARGUMENT_SEPERATOR = ',';
+export const SETTER = '=';
 
 export const whitespace = new Set([' ', '\n', '\t']);

@@ -19,6 +19,7 @@ import VariableAccessorInterpreter from './VariableAccessorInterpreter';
 export interface ValueInterpreterState extends BaseInterpreterState {
   targetNode: ValueNodes | VariableAccessorNode | null;
   props: Array<PropertyAccessorNode | FunctionCallNode>;
+  setTo: ValueNode | null;
 }
 
 export default class ValueInterpreter extends Interpreter<
@@ -81,6 +82,42 @@ export default class ValueInterpreter extends Interpreter<
           ).run(data.slice(this.state.cursor));
           this.state.cursor += result.meta.sourceLength;
           this.state.props.push(result);
+        } else if (char === Constants.SETTER && !this.state.setTo) {
+          {
+            const errorMeta = {
+              at: sourceLocation,
+              length: 0
+            };
+
+            if (!(this.state.targetNode instanceof VariableAccessorNode))
+              throw new Errors.SyntaxError(
+                'Invalid left hand side in assignment (cannot set to a literal value)',
+                errorMeta
+              );
+
+            if (
+              // prettier-ignore
+              this.state.props[this.state.props.length - 1] instanceof FunctionCallNode
+            )
+              throw new Errors.SyntaxError(
+                'Invalid left hand side in assignment (cannot set to the direct output of a function)',
+                errorMeta
+              );
+          }
+
+          this.state.setTo = new ValueNode(
+            this.state.targetNode,
+            this.state.props,
+            null,
+            {
+              sourceLocation,
+              sourceLength: this.state.cursor
+            },
+            null
+          );
+
+          this.state.targetNode = null;
+          this.state.props = [];
         } else if (Constants.whitespace.has(char)) {
           return true;
         } else {
@@ -92,6 +129,7 @@ export default class ValueInterpreter extends Interpreter<
         this.node = new ValueNode(
           this.state.targetNode!,
           this.state.props,
+          this.state.setTo,
           {
             sourceLocation,
             sourceLength: this.state.cursor
@@ -110,6 +148,7 @@ export default class ValueInterpreter extends Interpreter<
     cursor: 0,
     finished: false,
     targetNode: null,
+    setTo: null,
     props: []
   };
 }
