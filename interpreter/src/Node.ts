@@ -132,3 +132,13 @@ export class FunctionCallNode extends BaseNode {
     super(meta, parent);
   }
 }
+
+export class ProgramNode extends BaseNode {
+  public constructor(
+    public statements: ValueNode[],
+    meta: NodeMetadata,
+    parent: Node | null = null
+  ) {
+    super(meta, parent);
+  }
+}

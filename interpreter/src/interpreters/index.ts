@@ -4,6 +4,9 @@ export { default as FunctionCallInterpreter } from './FunctionCallInterpreter';
 export * from './NumberInterpreter';
 export { default as NumberInterpreter } from './NumberInterpreter';
 
+export * from './ProgramInterpreter';
+export { default as ProgramInterpreter } from './ProgramInterpreter';
+
 export * from './PropertyAccessorInterpreter';
 export { default as PropertyAccessorInterpreter } from './PropertyAccessorInterpreter';
 
