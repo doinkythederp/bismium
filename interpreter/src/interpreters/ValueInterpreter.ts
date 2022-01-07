@@ -82,7 +82,7 @@ export default class ValueInterpreter extends Interpreter<
           ).run(data.slice(this.state.cursor));
           this.state.cursor += result.meta.sourceLength;
           this.state.props.push(result);
-        } else if (char === Constants.SETTER && !this.state.setTo) {
+        } else if (char === Constants.SETTER) {
           {
             const errorMeta = {
               at: sourceLocation,
@@ -105,7 +105,7 @@ export default class ValueInterpreter extends Interpreter<
               );
           }
 
-          this.state.setTo = new ValueNode(
+          const node = new ValueNode(
             this.state.targetNode,
             this.state.props,
             null,
@@ -118,6 +118,14 @@ export default class ValueInterpreter extends Interpreter<
 
           this.state.targetNode = null;
           this.state.props = [];
+
+          let nextState: { setTo: ValueNode | null } = this.state;
+          while (nextState.setTo) {
+            nextState = nextState.setTo;
+          }
+
+          nextState.setTo = node;
+          if (nextState !== this.state) node.parent = nextState as ValueNode;
         } else if (Constants.whitespace.has(char)) {
           return true;
         } else {
@@ -138,6 +146,7 @@ export default class ValueInterpreter extends Interpreter<
         );
 
         this.node.target.parent = this.node;
+        if (this.node.setTo) this.node.setTo.parent = this.node;
         for (const node of this.node.props) {
           node.parent = this.node;
         }
