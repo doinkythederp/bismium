@@ -26,6 +26,7 @@ export default class ProgramInterpreter extends Interpreter<
       ) {
         this.state.ready = true;
         this.state.cursor++;
+        return true;
       }
 
       if (this.state.ready) {
