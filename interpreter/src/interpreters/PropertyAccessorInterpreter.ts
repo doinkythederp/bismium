@@ -16,7 +16,11 @@ export default class PropertyAccessorInterpreter extends Interpreter<
     this.use((data) => {
       const char = data[this.state.cursor]!;
 
-      if (VariableAccessorInterpreter.validKeyword.test(char)) {
+      if (
+        VariableAccessorInterpreter[
+          this.state.value ? 'validKeyword' : 'validKeywordStart'
+        ].test(char)
+      ) {
         this.state.value += char;
         this.state.cursor++;
       } else {
@@ -39,6 +43,4 @@ export default class PropertyAccessorInterpreter extends Interpreter<
     finished: false,
     value: ''
   };
-
-  public static validKeyword = /^[A-Za-z\$_]$/;
 }

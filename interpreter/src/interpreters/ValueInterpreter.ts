@@ -50,7 +50,7 @@ export default class ValueInterpreter extends Interpreter<
             : TextNodeVariant.DOUBLE_QUOTE,
           sourceLocation + this.state.cursor
         ).run(data.slice(this.state.cursor + 1));
-      } else if (VariableAccessorInterpreter.validKeyword.test(char)) {
+      } else if (VariableAccessorInterpreter.validKeywordStart.test(char)) {
         this.state.targetNode = await new VariableAccessorInterpreter(
           sourceLocation + this.state.cursor
         ).run(data.slice(this.state.cursor));

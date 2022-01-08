@@ -6,7 +6,7 @@ describe(ValueInterpreter, () => {
     expect(node.target).toHaveProperty('name', 'foobar');
   });
 
-  it.skip('can parse variables with numbers in their names', async () => {
+  it('can parse variables with numbers in their names', async () => {
     const variableName = `foo${Math.round(Math.random() * 100_000)}`;
     const node = await new ValueInterpreter().run(variableName);
     expect(node.target).toHaveProperty('name', variableName);
