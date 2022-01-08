@@ -1,6 +1,6 @@
 {
   "name": "@doinkythederp/bismium-interpreter",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "An interpreter for the Bismium programming language",
   "main": "./lib/src/index.js",
   "exports": "./lib/src/index.js",
