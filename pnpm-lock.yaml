@@ -65,6 +65,43 @@ importers:
       prettier: 2.5.1
       typescript: 4.5.4
 
+  runtime:
+    specifiers:
+      '@commitlint/cli': ^15.0.0
+      '@commitlint/config-angular': ^15.0.0
+      '@doinkythederp/bismium-interpreter': workspace:^0.3.0
+      '@types/jest': ^27.0.3
+      '@types/node': ^16.11.7
+      '@typescript-eslint/eslint-plugin': ^5.4.0
+      '@typescript-eslint/parser': ^5.4.0
+      eslint: ^8.3.0
+      eslint-config-marine: ^9.0.6
+      eslint-config-prettier: ^8.3.0
+      eslint-plugin-prettier: ^4.0.0
+      jest: ^27.4.5
+      lint-staged: ^12.1.2
+      prettier: ^2.3.2
+      tslib: ^2.3.1
+      typescript: ^4.4.4
+    dependencies:
+      tslib: 2.3.1
+    devDependencies:
+      '@commitlint/cli': 15.0.0
+      '@commitlint/config-angular': 15.0.0
+      '@doinkythederp/bismium-interpreter': link:../interpreter
+      '@types/jest': 27.0.3
+      '@types/node': 16.11.12
+      '@typescript-eslint/eslint-plugin': 5.7.0_915acdfead96f701b1277a1a723fc8d4
+      '@typescript-eslint/parser': 5.7.0_eslint@8.4.1+typescript@4.5.4
+      eslint: 8.4.1
+      eslint-config-marine: 9.1.0
+      eslint-config-prettier: 8.3.0_eslint@8.4.1
+      eslint-plugin-prettier: 4.0.0_90bd2ba582f6d1348d73031482d782e2
+      jest: 27.4.5
+      lint-staged: 12.1.2
+      prettier: 2.5.1
+      typescript: 4.5.4
+
 packages:
 
   /@babel/code-frame/7.16.0:
