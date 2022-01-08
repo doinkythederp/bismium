@@ -139,8 +139,17 @@ export default class ValueInterpreter extends Interpreter<
         }
       })
       .end(() => {
+        if (!this.state.targetNode)
+          throw new Errors.SyntaxError(
+            `expected a value (e.g. string literal or variable), but the input ended instead`,
+            {
+              at: this.state.cursor + sourceLocation,
+              length: 0
+            }
+          );
+
         this.node = new ValueNode(
-          this.state.targetNode!,
+          this.state.targetNode,
           this.state.props,
           this.state.setTo,
           {
