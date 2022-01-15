@@ -1,6 +1,6 @@
 {
   "name": "@doinkythederp/bismium-runtime",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A runtime for the Bismium programming language",
   "main": "./lib/src/index.js",
   "exports": "./lib/src/index.js",
