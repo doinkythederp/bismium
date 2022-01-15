@@ -1,8 +1,8 @@
-import RootContext from '../RootContext';
 import { BaseValue, Value } from '.';
+import Runtime from '../Runtime';
 
 export default class BismiumObject implements BaseValue {
-  public constructor(public readonly rootContext: RootContext) {}
+  public constructor(public readonly runtime: Runtime) {}
 
   private readonly properties = new Map<string, Value>();
 

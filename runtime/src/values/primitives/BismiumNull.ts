@@ -1,9 +1,9 @@
-import RootContext from '../../RootContext';
+import Runtime from '../../Runtime';
 import { BaseValue, Value } from '..';
 import * as Errors from '../../util/errors';
 
 export default class BismiumNull implements BaseValue {
-  public constructor(public readonly rootContext: RootContext) {}
+  public constructor(public readonly runtime: Runtime) {}
 
   public getProperty(key: string): never {
     throw new Errors.TypeError(

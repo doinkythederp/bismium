@@ -1,20 +1,20 @@
 import BismiumObject from './BismiumObject';
-import RootContext from '../RootContext';
 import { Value } from '.';
+import Runtime from '../Runtime';
 
 export default class BismiumFunction extends BismiumObject {
   public constructor(
-    rootContext: RootContext,
+    runtime: Runtime,
     private readonly callback: BismiumFunctionCallback,
     public readonly name = callback.name
   ) {
-    super(rootContext);
+    super(runtime);
   }
 
   public call(args: Value[]) {
     return Promise.resolve(
       this.callback({
-        rootContext: this.rootContext,
+        runtime: this.runtime,
         args
       })
     );
@@ -30,6 +30,6 @@ export type BismiumFunctionCallback = (
 ) => Promise<Value> | Value;
 
 export interface BismiumCallbackInfo {
-  rootContext: RootContext;
+  runtime: Runtime;
   args: Value[];
 }
