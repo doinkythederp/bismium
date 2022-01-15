@@ -11,9 +11,9 @@ export default class BismiumFunction extends BismiumObject {
     super(runtime);
   }
 
-  public call(args: Value[]) {
+  public call(args: Value[], thisVal: Value | null) {
     return Promise.resolve(
-      this.callback({
+      this.callback.call(thisVal, {
         runtime: this.runtime,
         args
       })
@@ -26,6 +26,7 @@ export default class BismiumFunction extends BismiumObject {
 }
 
 export type BismiumFunctionCallback = (
+  this: Value | null,
   callbackInfo: BismiumCallbackInfo
 ) => Promise<Value> | Value;
 

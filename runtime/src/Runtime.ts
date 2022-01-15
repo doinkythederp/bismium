@@ -32,6 +32,7 @@ export default class Runtime {
     node: ValueNode
   ): Promise<Value> {
     let target: Value;
+    let thisVal: Value | null = null;
     // used for error reporting
     let displayName: string;
 
@@ -62,6 +63,7 @@ export default class Runtime {
             `The property \`${displayName}.${propNode.prop}\` has not been defined`
           );
 
+        thisVal = target;
         target = lookupResult;
         displayName += `.${propNode.prop}`;
       } else if (propNode instanceof FunctionCallNode) {
@@ -73,7 +75,9 @@ export default class Runtime {
           resolvedArgs.push(await this.handleStatement(ctx, arg));
         }
 
-        target = await (await Timers.setImmediate(target)).call(resolvedArgs);
+        target = await (
+          await Timers.setImmediate(target)
+        ).call(resolvedArgs, thisVal);
         displayName += `(${resolvedArgs.map(() => '...').join(', ')})`;
       }
     }
