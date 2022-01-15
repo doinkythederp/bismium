@@ -18,9 +18,13 @@ export default class Runtime {
   public constructor(public lib: RuntimeLibrary) {}
 
   public async start(program: ProgramNode, ctx = new Map<string, Value>()) {
+    let result: Value | null = null;
     for (const node of program.statements) {
-      await (await Timers.setImmediate(this)).handleStatement(ctx, node);
+      result = await (
+        await Timers.setImmediate(this)
+      ).handleStatement(ctx, node);
     }
+    return result;
   }
 
   private async handleStatement(
