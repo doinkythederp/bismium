@@ -23,5 +23,5 @@ export default class BismiumNumber implements BaseValue {
     return this.value;
   }
 
-  public displayName = '<number>';
+  public displayName = `<number ${this.value}>`;
 }
